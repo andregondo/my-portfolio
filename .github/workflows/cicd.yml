@@ -12,7 +12,7 @@ permissions:
 
 env:
   python_version: '3.11'
-  IMAGE_NAME: portfolio
+  IMAGE_NAME: my-portfolio
   AWS_REGION: us-east-1
   ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   ECR_REPO: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/dev/my-portfolio
