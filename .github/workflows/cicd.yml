@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+permissions:
+  id-token: write        # Required for OIDC
+  contents: read         # Allows checkout
+env:
+  python_version: '3.11'
+  IMAGE_NAME: portfolio
+  AWS_REGION: us-east-1
+  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  ECR_REPO: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.IMAGE_NAME }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.python_version }}  # or simply 3.11
+      - name: Install pytest
+        run: pip install -r requirements.txt
+      - name: Run unit tests
+        run: pytest test.py
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check credentials
+        run: aws s3 ls
+   
